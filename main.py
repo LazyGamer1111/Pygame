@@ -31,7 +31,7 @@ class foto:
         self.lach = lach
         self.boos = boos
         self.surfaec = surface
-        self.blockx = 100
+        self.blockx = (WIDTH/2)-(self.lach.get_width()/2)
         self.blocky = 100
         self.current = lach
         self.boosB = False
