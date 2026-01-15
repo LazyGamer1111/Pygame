@@ -4,7 +4,6 @@ HEIGHT = 600
 WIDTH = 1400
 GREEN = (0,255,0)
 running = True
-boos = False
 
 pygame.init()
 surface = pygame.display.set_mode((WIDTH,HEIGHT)) 
@@ -15,39 +14,59 @@ gezichtLach = pygame.transform.rotate(gezichtLach, -90)
 gezichtBoos = pygame.image.load("images/boos.jpg").convert()
 gezichtBoos = pygame.transform.rotate(gezichtBoos, -90)
 
-lastFiguur = gezichtLach
+rickL = pygame.image.load("images/rickL.png").convert()
+rickL = pygame.transform.rotate(rickL, -90)
+
+rickB = pygame.image.load("images/rickB.png").convert()
+rickB = pygame.transform.rotate(rickB, -90)
+
 
 def drawBackground(surface):
     surface.fill((255,255,0))
     surface.blit(bg, (0,0))
     pygame.display.flip()
 
-def drawFace(surface, keydown):
-    global x,y,gezichtLach, lastFiguur, boos
-    figuur = lastFiguur
-    drawBackground(surface)
-    if keydown == pygame.K_DOWN:
-        y+=10
-        pygame.draw.circle(surface, GREEN, (x,y), 10)
-    if keydown == pygame.K_UP:
-        y-=10
-    if keydown == pygame.K_LEFT:
-        x-=10
-        if x < (WIDTH/2)-(gezichtLach.get_width()/2) and boos == True:
-            figuur = gezichtLach
-            boos = False
-        figuur = pygame.transform.rotate(figuur, 90)
-    if keydown == pygame.K_RIGHT:
-        x+=10
-        if x > (WIDTH/2)-(gezichtLach.get_width()/2) and boos == False:
-            figuur = gezichtBoos
-            boos = True
-        figuur = pygame.transform.rotate(figuur, -90)
+class foto:
+    def __init__(self, lach, boos, surface, key):
+        self.lach = lach
+        self.boos = boos
+        self.surfaec = surface
+        self.blockx = 100
+        self.blocky = 100
+        self.current = lach
+        self.boos = False
+        self.key = key
+    def drawFace(self, keydown):
+        figuur = self.current
+        drawBackground(surface)
+        if keydown == pygame.K_DOWN:
+            self.blocky+=10
+            pygame.draw.circle(surface, GREEN, (self.blockx,self.blocky), 10)
+        if keydown == pygame.K_UP:
+            self.blocky-=10
+        if keydown == pygame.K_LEFT:
+            self.blockx-=10
+            if self.blockx < (WIDTH/2)-(gezichtLach.get_width()/2) and self.boos == True:
+                figuur = self.lach
+                self.boos = False
+            figuur = pygame.transform.rotate(figuur, 90)
+        if keydown == pygame.K_RIGHT:
+            self.blockx+=10
+            if self.blockx > (WIDTH/2)-(gezichtLach.get_width()/2) and self.boos == False:
+                figuur = self.boos
+                self.boos = True
+            figuur = pygame.transform.rotate(figuur, -90)
 
-    lastFiguur = figuur
-    
-    surface.blit(figuur, (x,y))
-    pygame.display.flip()
+        self.current = figuur
+        
+        surface.blit(figuur, (self.blockx,self.blocky))
+        pygame.display.flip()
+
+rick = foto(rickL, rickB, surface, pygame.K_r)
+burn = foto(gezichtLach, gezichtBoos, surface, pygame.K_k)
+gezichten = {rick, burn}
+
+currentFoto = burn
 
 x=(WIDTH/2)-(gezichtLach.get_width()/2)
 y=HEIGHT/2
@@ -67,6 +86,9 @@ while running:
         if event.type == pygame.KEYDOWN:
             if (event.key == pygame.K_ESCAPE):
                 running = False
-            drawFace(surface, event.key)
+            for gezicht in gezichten:
+                if event.key == gezicht.key:
+                    currentFoto = gezicht
+            currentFoto.drawFace(event.key)
 
 
