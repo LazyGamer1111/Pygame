@@ -34,7 +34,7 @@ class foto:
         self.blockx = 100
         self.blocky = 100
         self.current = lach
-        self.boos = False
+        self.boosB = False
         self.key = key
     def drawFace(self, keydown):
         figuur = self.current
@@ -46,15 +46,15 @@ class foto:
             self.blocky-=10
         if keydown == pygame.K_LEFT:
             self.blockx-=10
-            if self.blockx < (WIDTH/2)-(gezichtLach.get_width()/2) and self.boos == True:
+            if self.blockx < (WIDTH/2)-(gezichtLach.get_width()/2) and self.boosB == True:
                 figuur = self.lach
-                self.boos = False
+                self.boosB = False
             figuur = pygame.transform.rotate(figuur, 90)
         if keydown == pygame.K_RIGHT:
             self.blockx+=10
-            if self.blockx > (WIDTH/2)-(gezichtLach.get_width()/2) and self.boos == False:
+            if self.blockx > (WIDTH/2)-(gezichtLach.get_width()/2) and self.boosB == False:
                 figuur = self.boos
-                self.boos = True
+                self.boosB = True
             figuur = pygame.transform.rotate(figuur, -90)
 
         self.current = figuur
