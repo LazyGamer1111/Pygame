@@ -1,4 +1,5 @@
 import pygame
+import math
 
 HEIGHT = 600
 WIDTH = 1400
@@ -20,11 +21,15 @@ rickL = pygame.transform.rotate(rickL, -90)
 rickB = pygame.image.load("images/rickB.png").convert()
 rickB = pygame.transform.rotate(rickB, -90)
 
+pygame.joystick.init()
+joysticks = [pygame.joystick.Joystick(i) for i in range(pygame.joystick.get_count())]
+for joystick in joysticks:
+    print(joystick.get_name())
+
 
 def drawBackground(surface):
     surface.fill((255,255,0))
     surface.blit(bg, (0,0))
-    pygame.display.flip()
 
 class foto:
     def __init__(self, lach, boos, surface, key):
@@ -36,37 +41,58 @@ class foto:
         self.current = lach
         self.boosB = False
         self.key = key
-    def drawFace(self, keydown):
+        self.dir = "u"
+    
+    def setDir(self, event):
+        if event.axis == 0:
+            # Horizontaal
+            if event.value > 0.1:
+                self.dir = "r"
+            if event.value < -0.1:
+                self.dir = "l"
+        if event.axis == 1:
+            # Vertikaal
+            if event.value > 0.1:
+                self.dir = "d"
+            if event.value < -0.1:
+                self.dir = "u"
+
+
+    def drawFace(self):
         figuur = self.current
         drawBackground(surface)
-        if keydown == pygame.K_DOWN:
+        if self.dir == "d":
             self.blocky+=10
-            pygame.draw.circle(surface, GREEN, (self.blockx,self.blocky), 10)
-        if keydown == pygame.K_UP:
+        if self.dir == "u":
             self.blocky-=10
-        if keydown == pygame.K_LEFT:
+        if self.dir == "l":
             self.blockx-=10
             if self.blockx < (WIDTH/2)-(gezichtLach.get_width()/2) and self.boosB == True:
                 figuur = self.lach
                 self.boosB = False
-            figuur = pygame.transform.rotate(figuur, 90)
-        if keydown == pygame.K_RIGHT:
+        if self.dir == "r":
             self.blockx+=10
             if self.blockx > (WIDTH/2)-(gezichtLach.get_width()/2) and self.boosB == False:
                 figuur = self.boos
                 self.boosB = True
-            figuur = pygame.transform.rotate(figuur, -90)
 
         self.current = figuur
+
+        self.blockx = min(WIDTH-figuur.get_width(), self.blockx)
+        self.blockx = max(0, self.blockx)
+        self.blocky = min(HEIGHT-figuur.get_height(), self.blocky)
+        self.blocky = max(0, self.blocky)
+
         
         surface.blit(figuur, (self.blockx,self.blocky))
-        pygame.display.flip()
 
 rick = foto(rickL, rickB, surface, pygame.K_r)
 burn = foto(gezichtLach, gezichtBoos, surface, pygame.K_k)
 gezichten = {rick, burn}
 
 currentFoto = burn
+
+clock = pygame.time.Clock()
 
 x=(WIDTH/2)-(gezichtLach.get_width()/2)
 y=HEIGHT/2
@@ -89,6 +115,10 @@ while running:
             for gezicht in gezichten:
                 if event.key == gezicht.key:
                     currentFoto = gezicht
-            currentFoto.drawFace(event.key)
+        if event.type == pygame.JOYAXISMOTION:
+            currentFoto.setDir(event)
+    currentFoto.drawFace()
+    pygame.display.update()
+    clock.tick(60)
 
 
