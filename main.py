@@ -1,6 +1,4 @@
 import pygame
-import math
-
 HEIGHT = 600
 WIDTH = 1400
 GREEN = (0,255,0)
@@ -78,10 +76,13 @@ class foto:
 
         self.current = figuur
 
-        self.blockx = min(WIDTH-figuur.get_width(), self.blockx)
-        self.blockx = max(0, self.blockx)
-        self.blocky = min(HEIGHT-figuur.get_height(), self.blocky)
-        self.blocky = max(0, self.blocky)
+        # self.blockx = min(WIDTH-figuur.get_width(), self.blockx)
+        # self.blockx = max(0, self.blockx)
+        self.blockx = pygame.math.clamp(self.blockx, 0, WIDTH-figuur.get_width())
+        # self.blocky = min(HEIGHT-figuur.get_height(), self.blocky)
+        # self.blocky = max(0, self.blocky)
+        self.blocky = pygame.math.clamp(self.blocky, 0, HEIGHT-figuur.get_height())
+
 
         
         surface.blit(figuur, (self.blockx,self.blocky))
